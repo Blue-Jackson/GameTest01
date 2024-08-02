@@ -1,43 +1,138 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Cursed Temple Game</title>
+	<title>Space Invaders</title>
+	<style>
+		/* Add some basic styling */
+		body {
+			background-color: #000;
+			color: #fff;
+		}
+		#game-container {
+			width: 400px;
+			height: 400px;
+			border: 1px solid #fff;
+			position: relative;
+		}
+		.ship {
+			width: 20px;
+			height: 20px;
+			background-color: #0f0;
+			position: absolute;
+			bottom: 0;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+		.invader {
+			width: 20px;
+			height: 20px;
+			background-color: #f00;
+			position: absolute;
+		}
+		.bullet {
+			width: 5px;
+			height: 10px;
+			background-color: #fff;
+			position: absolute;
+		}
+	</style>
 </head>
 <body>
-	<h1>Cursed Temple Game</h1>
-	<p id="health">Health: 100</p>
-	<input id="action" type="text" placeholder="Enter action (1, 2, or 3)">
-	<button onclick="playGame()">Play</button>
+	<div id="game-container">
+		<div class="ship" id="ship"></div>
+	</div>
 	<script>
-		let health = 100;
-		function playGame() {
-			const action = document.getElementById("action").value;
-			if (action === "1") {
-				// Explore: 20% chance of losing 10 health
-				if (Math.random() < 0.2) {
-					health -= 10;
-					document.getElementById("health").innerHTML = `Health: ${health}`;
-					alert("You were injured!");
-				} else {
-					alert("You found a treasure!");
-				}
-			} else if (action === "2") {
-				// Rest: gain 10 health
-				health += 10;
-				document.getElementById("health").innerHTML = `Health: ${health}`;
-				alert("You rested.");
-			} else if (action === "3") {
-				// Quit: exit game
-				alert("Thanks for playing!");
-				health = 0;
-			} else {
-				// Invalid action: display error
-				alert("Invalid action. Try again!");
+		// Get the game container and ship elements
+		const gameContainer = document.getElementById("game-container");
+		const ship = document.getElementById("ship");
+		
+		// Set the ship's initial position
+		let shipX = gameContainer.offsetWidth / 2;
+		let shipY = gameContainer.offsetHeight - 20;
+		
+		// Set the invader's initial position and speed
+		let invaderX = 0;
+		let invaderY = 0;
+		let invaderSpeed = 2;
+		
+		// Set the bullet's initial position and speed
+		let bulletX = 0;
+		let bulletY = 0;
+		let bulletSpeed = 5;
+		
+		// Create an array to hold the invaders
+		const invaders = [];
+		
+		// Create an array to hold the bullets
+		const bullets = [];
+		
+		// Function to create an invader
+		function createInvader() {
+			const invader = document.createElement("div");
+			invader.className = "invader";
+			invader.style.left = `${invaderX}px`;
+			invader.style.top = `${invaderY}px`;
+			gameContainer.appendChild(invader);
+			invaders.push(invader);
+		}
+		
+		// Function to create a bullet
+		function createBullet() {
+			const bullet = document.createElement("div");
+			bullet.className = "bullet";
+			bullet.style.left = `${bulletX}px`;
+			bullet.style.top = `${bulletY}px`;
+			gameContainer.appendChild(bullet);
+			bullets.push(bullet);
+		}
+		
+		// Function to move the ship
+		function moveShip(event) {
+			if (event.key === "ArrowLeft") {
+				shipX -= 10;
+			} else if (event.key === "ArrowRight") {
+				shipX += 10;
 			}
-			if (health <= 0) {
-				alert("Game over. You died!");
+			ship.style.left = `${shipX}px`;
+		}
+		
+		// Function to move the invaders
+		function moveInvaders() {
+			invaderX += invaderSpeed;
+			if (invaderX > gameContainer.offsetWidth - 20 || invaderX < 0) {
+				invaderSpeed = -invaderSpeed;
+				invaderY += 20;
+			}
+			for (let i = 0; i < invaders.length; i++) {
+				invaders[i].style.left = `${invaderX}px`;
+				invaders[i].style.top = `${invaderY}px`;
 			}
 		}
-	</script>
-</body>
-</html>
+		
+		// Function to move the bullets
+		function moveBullets() {
+			for (let i = 0; i < bullets.length; i++) {
+				bulletY -= bulletSpeed;
+				bullets[i].style.top = `${bulletY}px`;
+				if (bulletY < 0) {
+					bullets.splice(i, 1);
+					gameContainer.removeChild(bullets[i]);
+				}
+			}
+		}
+		
+		// Function to check for collisions
+		function checkCollisions() {
+			for (let i = 0; i < invaders.length; i++) {
+				if (
+					shipX + 20 > invaders[i].offsetLeft &&
+					shipX < invaders[i].offsetLeft + 20 &&
+					shipY + 20 > invaders[i].offsetTop &&
+					shipY < invaders[i].offsetTop + 20
+				) {
+					alert("Game Over");
+					return;
+				}
+			}
+			for (let i = 0; i < bullets.length; i++) {
+				for
