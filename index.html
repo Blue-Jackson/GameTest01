@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Cursed Temple Game</title>
+</head>
+<body>
+	<h1>Cursed Temple Game</h1>
+	<p id="health">Health: 100</p>
+	<input id="action" type="text" placeholder="Enter action (1, 2, or 3)">
+	<button onclick="playGame()">Play</button>
+	<script>
+		let health = 100;
+		function playGame() {
+			const action = document.getElementById("action").value;
+			if (action === "1") {
+				// Explore: 20% chance of losing 10 health
+				if (Math.random() < 0.2) {
+					health -= 10;
+					document.getElementById("health").innerHTML = `Health: ${health}`;
+					alert("You were injured!");
+				} else {
+					alert("You found a treasure!");
+				}
+			} else if (action === "2") {
+				// Rest: gain 10 health
+				health += 10;
+				document.getElementById("health").innerHTML = `Health: ${health}`;
+				alert("You rested.");
+			} else if (action === "3") {
+				// Quit: exit game
+				alert("Thanks for playing!");
+				health = 0;
+			} else {
+				// Invalid action: display error
+				alert("Invalid action. Try again!");
+			}
+			if (health <= 0) {
+				alert("Game over. You died!");
+			}
+		}
+	</script>
+</body>
+</html>
